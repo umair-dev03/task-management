@@ -1,0 +1,70 @@
+# Root .gitignore for Task Management Application (API + Frontend)
+
+# OS / System
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editors / IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Node / React
+**/node_modules/
+**/build/
+**/dist/
+**/coverage/
+**/.cache/
+**/.parcel-cache/
+**/.eslintcache
+**/.stylelintcache
+**/.storybook/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/pnpm-debug.log*
+# Keep lockfiles committed for reproducible builds:
+# (do NOT ignore package-lock.json / yarn.lock / pnpm-lock.yaml)
+
+# CRA / Next / Others (defensive)
+**/.next/
+**/out/
+**/.turbo/
+
+# Environment files (provide .env.example manually instead)
+*.env
+*.env.local
+*.env.development
+*.env.test
+*.env.production
+
+# Logs
+logs/
+*.log
+log.txt
+
+# .NET / Visual Studio / Rider
+**/bin/
+**/obj/
+**/.vs/
+*.user
+*.suo
+*.rsuser
+*.sln.docstates
+
+# EF / Database (local)
+*.mdf
+*.ldf
+
+# Misc
+*.swp
+*.tmp
+~$*
+
+# Images / cache artifacts (defensive)
+**/.thumbs/
+
+# macOS archive artifacts and resource forks
+**/__MACOSX/
+._*

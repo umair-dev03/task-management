@@ -1,0 +1,574 @@
+/* Spin animation for loading states */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Modal backdrop blur effect */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Modal input focus effects */
+.modal-input:focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Modal button hover effects */
+.modal-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Simple date and time input styling */
+input[type="date"],
+input[type="time"] {
+  border: 2px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  font-size: 16px !important;
+  transition: all 0.2s ease !important;
+  background-color: white !important;
+  color: #374151 !important;
+  height: 48px !important;
+  box-sizing: border-box !important;
+}
+
+input[type="date"]:focus,
+input[type="time"]:focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Highlight newly created tasks */
+.kendo-grid .k-grid-tbody tr.new-task {
+  background-color: #e8f5e8 !important;
+  border-left: 4px solid #28a745 !important;
+  animation: highlightNewTask 2s ease-in-out;
+}
+
+@keyframes highlightNewTask {
+  0% {
+    background-color: #d4edda;
+    transform: translateX(-10px);
+  }
+
+  50% {
+    background-color: #e8f5e8;
+    transform: translateX(0);
+  }
+
+  100% {
+    background-color: #e8f5e8;
+    transform: translateX(0);
+  }
+}
+
+/* Hide KendoReact license warning banner */
+.k-license-banner,
+[data-testid="kendo-license-banner"],
+.k-license-warning,
+.k-license-notice {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+}
+
+/* Hide any yellow warning banners */
+div[style*="background-color: yellow"],
+div[style*="background-color: #ffff00"],
+div[style*="background-color: #ffeb3b"],
+.yellow-banner,
+.warning-banner,
+.license-banner {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Main container */
+.employee-dashboard {
+  margin: 0;
+  max-width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* background-color: #a8b5c7; */
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Heading */
+h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #5a6c7d;
+  margin-bottom: 30px;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+}
+
+/* Task list */
+.task-list {
+  margin-top: 30px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+h3 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #5a6c7d;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.no-tasks {
+  font-size: 1.1rem;
+  color: #8e9aaf;
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 20px;
+  border: 2px dashed #dee2e6;
+}
+
+/* Task Form */
+.task-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  flex-shrink: 0;
+}
+
+.input-container {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.button-container {
+  flex-shrink: 0;
+}
+
+.task-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
+  height: 48px;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+.task-input:focus {
+  border-color: #8e9aaf;
+  box-shadow: 0 0 0 3px rgba(142, 154, 175, 0.1);
+}
+
+/* Submit button styling */
+.submit-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #8e9aaf 0%, #a8b5c7 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 150px;
+  height: 48px;
+  box-sizing: border-box;
+  line-height: 1.5;
+  box-shadow: 0 2px 4px rgba(142, 154, 175, 0.2);
+}
+
+.submit-btn:hover {
+  background: linear-gradient(135deg, #7a8a9f 0%, #95a3b5 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(142, 154, 175, 0.3);
+}
+
+/* Grid Container - Full Height */
+.grid-container {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.edit-btn,
+.delete-btn {
+  background: linear-gradient(135deg, #8e9aaf 0%, #a8b5c7 100%);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 60px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(142, 154, 175, 0.2);
+}
+
+.edit-btn:hover,
+.delete-btn:hover {
+  background: linear-gradient(135deg, #7a8a9f 0%, #95a3b5 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(142, 154, 175, 0.3);
+}
+
+.delete-btn {
+  background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
+}
+
+.delete-btn:hover {
+  background: linear-gradient(135deg, #c82333 0%, #d63384 100%);
+}
+
+.employee-three-div-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-div {
+  flex: 2;
+  min-width: 0;
+}
+
+.select-div {
+  flex: 1;
+  min-width: 0;
+}
+
+.button-div {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .employee-three-div-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .search-div,
+  .select-div,
+  .button-div {
+    flex: 1;
+    width: 100%;
+  }
+}
+
+/* Aggressive overrides for all possible Kendo selectors */
+.kendo-grid th,
+.kendo-grid td,
+.kendo-grid .k-grid-header th,
+.kendo-grid .k-grid-tbody td,
+.kendo-grid .k-table th,
+.kendo-grid .k-table td {
+  box-sizing: border-box !important;
+}
+
+.edit-btn,
+.delete-btn {
+  background: linear-gradient(135deg, #8e9aaf 0%, #a8b5c7 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 8px 16px !important;
+  cursor: pointer !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  min-width: 60px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  box-shadow: 0 2px 4px rgba(142, 154, 175, 0.2) !important;
+}
+
+.edit-btn:hover,
+.delete-btn:hover {
+  background: linear-gradient(135deg, #7a8a9f 0%, #95a3b5 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(142, 154, 175, 0.3) !important;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.pagination-btn {
+  background: linear-gradient(135deg, #8e9aaf 0%, #a8b5c7 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(142, 154, 175, 0.2);
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #7a8a9f 0%, #95a3b5 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(142, 154, 175, 0.3);
+}
+
+.pagination-btn:disabled {
+  background: #dee2e6;
+  color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.page-number {
+  font-weight: 600;
+  font-size: 14px;
+  color: #8e9aaf;
+  min-width: 80px;
+  text-align: center;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  border-radius: 6px;
+  border: 2px solid #e9ecef;
+}
+
+/* Edit task cell styling */
+.edit-task-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.edit-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
+}
+
+.edit-input:focus {
+  border-color: #8e9aaf;
+  box-shadow: 0 0 0 3px rgba(142, 154, 175, 0.1);
+}
+
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.edit-actions button {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 60px;
+}
+
+/* Action buttons styling for Kendo Grid */
+.kendo-grid .k-grid-tbody td:last-child {
+  text-align: center !important;
+  padding: 8px !important;
+  vertical-align: middle !important;
+}
+
+.kendo-grid .k-grid-tbody td:last-child>div {
+  display: flex !important;
+  gap: 6px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 32px !important;
+}
+
+/* Force the ActionCell to be visible */
+.kendo-grid .k-grid-tbody td:last-child div[style*="display: flex"] {
+  display: flex !important;
+  gap: 6px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 32px !important;
+}
+
+/* Small action buttons styling */
+.kendo-grid .k-grid-tbody td:last-child button {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 3px 6px !important;
+  cursor: pointer !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  min-width: 40px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  box-shadow: 0 1px 3px rgba(0, 123, 255, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+.kendo-grid .k-grid-tbody td:last-child button:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3) !important;
+}
+
+.kendo-grid .k-grid-tbody td:last-child button:last-child {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+  min-width: 50px !important;
+  box-shadow: 0 1px 3px rgba(220, 53, 69, 0.2) !important;
+}
+
+.kendo-grid .k-grid-tbody td:last-child button:last-child:hover {
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3) !important;
+}
+
+.kendo-grid .k-grid-tbody td:last-child button:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(142, 154, 175, 0.3) !important;
+}
+
+.kendo-grid .k-grid-tbody td:last-child button:last-child {
+  background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%) !important;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2) !important;
+}
+
+.kendo-grid .k-grid-tbody td:last-child button:last-child:hover {
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3) !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .employee-dashboard {
+    padding: 15px;
+  }
+
+  .login-form {
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .task-input-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .task-input {
+    width: 100%;
+  }
+
+  .submit-btn {
+    width: 100%;
+  }
+
+  .dropdown-menu {
+    right: auto;
+    left: 0;
+    min-width: 100px;
+  }
+}
+
+/* Tablet responsiveness */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .employee-dashboard {
+    padding: 20px;
+  }
+}
+
+/* Desktop responsiveness */
+@media (min-width: 1025px) {
+  .employee-dashboard {
+    padding: 30px;
+  }
+}
