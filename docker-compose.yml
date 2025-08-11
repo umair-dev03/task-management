@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   sqlserver:
@@ -14,7 +14,19 @@ services:
       - sql_data:/var/opt/mssql
       - ./task-management-api/init-db.sql:/init-db.sql
     healthcheck:
-      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "YourStrong!Passw0rd", "-Q", "SELECT 1" ]
+      test:
+        [
+          "CMD",
+          "/opt/mssql-tools/bin/sqlcmd",
+          "-S",
+          "localhost",
+          "-U",
+          "sa",
+          "-P",
+          "YourStrong!Passw0rd",
+          "-Q",
+          "SELECT 1",
+        ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -57,7 +69,15 @@ services:
       - NODE_ENV=production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost/health",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -65,6 +85,23 @@ services:
     depends_on:
       api:
         condition: service_started
+
+  # Development service with hot reload
+  frontend-dev:
+    build:
+      context: ./task-management-frontend/task-management-frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./task-management-frontend/task-management-frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_API_BASE_URL=http://localhost:8080/api
+    profiles:
+      - dev
 
 volumes:
   sql_data:

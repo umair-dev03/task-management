@@ -195,6 +195,37 @@ function ManagerDashboard() {
 
   return (
     <div className="manager-dashboard">
+      {/* Logout Button - Above Heading */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        marginBottom: '1rem'
+      }}>
+        <Button
+          onClick={() => {
+            localStorage.removeItem('user');
+            window.location.href = '/';
+          }}
+          themeColor="error"
+          size="small"
+          style={{
+            width: "150px",
+            padding: "6px 12px",
+            borderRadius: "4px",
+            fontSize: "12px",
+            fontWeight: "600",
+            backgroundColor: '#dc3545',
+            color: 'white',
+            border: 'none',
+            cursor: 'pointer',
+            transition: "all 0.2s ease"
+          }}
+        >
+          Logout
+        </Button>
+      </div>
+
+      {/* Dashboard Title */}
       <h2>Manager Dashboard</h2>
 
       {/* Status Confirmation Modal */}

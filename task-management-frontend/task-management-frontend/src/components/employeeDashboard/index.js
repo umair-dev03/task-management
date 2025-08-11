@@ -145,12 +145,9 @@ function EmployeeDashboard() {
 
       if (searchEmployeeName && searchEmployeeName.trim()) {
         const searchTerm = searchEmployeeName.toLowerCase().trim();
+
+        // Filter tasks based on search term
         filteredTasks = allTasks.filter(task => {
-          // Check if search term contains any letters or digits
-          const hasLettersOrDigits = /[a-zA-Z0-9]/.test(searchTerm);
-
-          if (!hasLettersOrDigits) return true; // If no letters/digits, show all
-
           // Search across multiple fields
           return (
             (task.title && task.title.toLowerCase().includes(searchTerm)) ||
@@ -314,6 +311,37 @@ function EmployeeDashboard() {
 
   return (
     <div className="employee-dashboard">
+      {/* Logout Button - Above Heading */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        marginBottom: '1rem'
+      }}>
+        <Button
+          onClick={() => {
+            localStorage.removeItem('user');
+            window.location.href = '/';
+          }}
+          themeColor="error"
+          size="small"
+          style={{
+            width: "150px",
+            padding: "6px 12px",
+            borderRadius: "4px",
+            fontSize: "12px",
+            fontWeight: "600",
+            backgroundColor: '#dc3545',
+            color: 'white',
+            border: 'none',
+            cursor: 'pointer',
+            transition: "all 0.2s ease"
+          }}
+        >
+          Logout
+        </Button>
+      </div>
+
+      {/* Dashboard Title */}
       <h2>Employee Dashboard</h2>
 
       {/* Modal for creating/editing a task */}
@@ -493,17 +521,14 @@ function EmployeeDashboard() {
                   <label style={{
                     fontSize: "14px",
                     fontWeight: "600",
-                    color: "#374151",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px"
+                    color: "#374151"
                   }}>
                     Hours Worked
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     name="hourWorked"
-                    value={taskForm.hourWorked}
+                    value={taskForm.hourWorked || ""}
                     onChange={handleModalChange}
                     required
                     placeholder="Enter hours worked..."
@@ -514,16 +539,7 @@ function EmployeeDashboard() {
                       border: "2px solid #e5e7eb",
                       fontSize: "16px",
                       outline: "none",
-                      transition: "all 0.2s ease",
                       boxSizing: "border-box"
-                    }}
-                    onFocus={(e) => {
-                      e.target.style.borderColor = "#667eea";
-                      e.target.style.boxShadow = "0 0 0 3px rgba(102, 126, 234, 0.1)";
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = "#e5e7eb";
-                      e.target.style.boxShadow = "none";
                     }}
                   />
                 </div>
