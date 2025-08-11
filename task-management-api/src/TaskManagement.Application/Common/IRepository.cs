@@ -15,5 +15,6 @@ namespace TaskManagement.Application.Common
         void Update(T entity);
         void Delete(T entity);
         Task SaveChangesAsync(CancellationToken cancellationToken = default);
+        System.Linq.IQueryable<T> Query();
     }
 }

@@ -3,7 +3,7 @@ import { Grid, GridColumn, GridToolbar } from '@progress/kendo-react-grid';
 import { Button } from "@progress/kendo-react-buttons";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { fetchTasksPaginated } from "../../services/taskService";
+import { fetchTasksPaginated, updateTaskStatus } from "../../services/taskService";
 import "./style.css";
 
 function ManagerDashboard() {
@@ -87,27 +87,28 @@ function ManagerDashboard() {
   };
 
   // Confirm status change
-  const confirmStatusChange = async () => {
-    if (!selectedTask || !newStatus) return;
+  const confirmStatusChange = async (forcedStatus) => {
+    const statusToApply = forcedStatus || newStatus;
+    if (!selectedTask || !statusToApply) return;
 
     setSubmittingStatus(true);
     try {
-      // Here you would call the API to update the task status
-      // For now, we'll just update the local state
-      setTasks(prevTasks =>
-        prevTasks.map(task =>
-          task.id === selectedTask.id
-            ? { ...task, status: newStatus }
-            : task
-        )
+      const updated = await updateTaskStatus(selectedTask.id, statusToApply);
+
+      // Update both allTasks and tasks arrays with the latest server value
+      setAllTasks(prev =>
+        prev.map(task => (task.id === updated.id ? { ...task, ...updated } : task))
+      );
+      setTasks(prev =>
+        prev.map(task => (task.id === updated.id ? { ...task, ...updated } : task))
       );
 
-      toast.success(`Task status updated to ${newStatus}!`);
+      toast.success(`Task status updated to ${statusToApply}!`);
       setShowStatusModal(false);
       setSelectedTask(null);
       setNewStatus('');
     } catch (error) {
-      toast.error("Failed to update task status");
+      toast.error(error.message || "Failed to update task status");
     } finally {
       setSubmittingStatus(false);
     }
@@ -328,32 +329,59 @@ function ManagerDashboard() {
                   </Button>
                   <Button
                     type="button"
-                    onClick={confirmStatusChange}
+                    onClick={() => confirmStatusChange('Approved')}
                     disabled={submittingStatus}
-                    themeColor={newStatus === 'Approved' ? 'success' : 'error'}
+                    themeColor="success"
                     size="medium"
                     style={{
                       padding: "12px 24px",
                       borderRadius: "8px",
                       fontSize: "14px",
                       fontWeight: "600",
-                      minWidth: "120px",
+                      minWidth: "140px",
                       transition: "all 0.2s ease",
-                      backgroundColor: newStatus === 'Approved' ? '#28a745' : '#dc3545',
+                      backgroundColor: '#28a745',
                       color: 'white',
-                      boxShadow: newStatus === 'Approved'
-                        ? "0 4px 12px rgba(34, 197, 94, 0.3)"
-                        : "0 4px 12px rgba(220, 53, 69, 0.3)"
+                      boxShadow: "0 4px 12px rgba(34, 197, 94, 0.3)"
                     }}
                   >
                     {submittingStatus ? (
                       <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <span style={{ animation: "spin 1s linear infinite" }}>⏳</span>
-                        Updating...
+                        Approving...
                       </span>
                     ) : (
                       <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        Confirm {newStatus}
+                        Confirm Approve
+                      </span>
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => confirmStatusChange('Rejected')}
+                    disabled={submittingStatus}
+                    themeColor="error"
+                    size="medium"
+                    style={{
+                      padding: "12px 24px",
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      minWidth: "140px",
+                      transition: "all 0.2s ease",
+                      backgroundColor: '#dc3545',
+                      color: 'white',
+                      boxShadow: "0 4px 12px rgba(220, 53, 69, 0.3)"
+                    }}
+                  >
+                    {submittingStatus ? (
+                      <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ animation: "spin 1s linear infinite" }}>⏳</span>
+                        Rejecting...
+                      </span>
+                    ) : (
+                      <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        Confirm Reject
                       </span>
                     )}
                   </Button>

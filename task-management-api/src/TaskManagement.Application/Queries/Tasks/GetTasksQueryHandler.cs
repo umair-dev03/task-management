@@ -1,8 +1,10 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using TaskManagement.Application.Common;
 using TaskManagement.Domain.Entities;
+using TaskManagement.Domain.Enums;
 
 namespace TaskManagement.Application.Queries.Tasks
 {
@@ -12,55 +14,40 @@ namespace TaskManagement.Application.Queries.Tasks
     public class GetTasksQueryHandler : IQueryHandler<GetTasksQuery, Result<PagedResult<TaskDto>>>
     {
         private readonly IRepository<TaskManagement.Domain.Entities.Task> _taskRepository;
-        private readonly IRepository<User> _userRepository;
 
-        public GetTasksQueryHandler(IRepository<TaskManagement.Domain.Entities.Task> taskRepository, IRepository<User> userRepository)
+        public GetTasksQueryHandler(IRepository<TaskManagement.Domain.Entities.Task> taskRepository)
         {
             _taskRepository = taskRepository;
-            _userRepository = userRepository;
         }
 
         public async System.Threading.Tasks.Task<Result<PagedResult<TaskDto>>> Handle(GetTasksQuery query, CancellationToken cancellationToken)
         {
-            // Get all users for EmployeeName search
-            var users = (await _userRepository.GetAllAsync(cancellationToken)).ToList();
-
-            // Build base query
-            var tasks = (await _taskRepository.GetAllAsync(cancellationToken)).AsQueryable();
+            IQueryable<TaskManagement.Domain.Entities.Task> tasks = _taskRepository.Query().AsNoTracking();
 
             // Role-based filtering
             if (query.Role == "Employee")
                 tasks = tasks.Where(t => t.UserId == query.UserId);
 
-            // Filter by Status
-            if (!string.IsNullOrWhiteSpace(query.Status))
-                tasks = tasks.Where(t => t.Status.ToString() == query.Status);
+            // Filter by Status (parse once to enum for proper translation)
+            if (!string.IsNullOrWhiteSpace(query.Status) && Enum.TryParse<Status>(query.Status, true, out var statusEnum))
+                tasks = tasks.Where(t => t.Status == statusEnum);
 
-            // Search by Employee name
+            // Search by Employee name (translated to SQL via navigation)
             if (!string.IsNullOrWhiteSpace(query.SearchEmployeeName))
             {
-                var userIds = users
-                    .Where(u => u.UserName.Contains(query.SearchEmployeeName))
-                    .Select(u => u.Id)
-                    .ToList();
-                tasks = tasks.Where(t => userIds.Contains(t.UserId));
+                var pattern = $"%{query.SearchEmployeeName}%";
+                tasks = tasks.Where(t => t.User != null && EF.Functions.Like(t.User.UserName, pattern));
             }
 
             // Total count before pagination
-            var totalCount = tasks.Count();
+            var totalCount = await tasks.CountAsync(cancellationToken);
 
-            // Pagination
-            var pagedTasks = tasks
+            // Pagination + Projection (single SQL roundtrip)
+            var items = await tasks
                 .OrderByDescending(t => t.Date)
                 .Skip((query.PageNumber - 1) * query.PageSize)
                 .Take(query.PageSize)
-                .ToList();
-
-            // Map to DTOs
-            var items = pagedTasks.Select(t =>
-            {
-                var user = users.FirstOrDefault(u => u.Id == t.UserId);
-                return new TaskDto
+                .Select(t => new TaskDto
                 {
                     Id = t.Id,
                     Title = t.Title,
@@ -68,9 +55,9 @@ namespace TaskManagement.Application.Queries.Tasks
                     HourWorked = t.HourWorked,
                     Status = t.Status.ToString(),
                     UserId = t.UserId,
-                    EmployeeName = user?.UserName ?? ""
-                };
-            }).ToList();
+                    EmployeeName = t.User != null ? t.User.UserName : ""
+                })
+                .ToListAsync(cancellationToken);
 
             var result = new PagedResult<TaskDto>
             {

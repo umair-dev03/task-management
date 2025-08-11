@@ -186,6 +186,44 @@ export async function updateTask(taskId, taskData) {
   }
 }
 
+export async function updateTaskStatus(taskId, status) {
+  try {
+    const token = getAuthToken();
+    const url = `${API_BASE_URL}/Task/${taskId}/status`;
+
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ status }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        // Token is invalid or expired, redirect to login
+        localStorage.removeItem('user');
+        window.location.href = '/';
+        throw new Error('Authentication failed. Please login again.');
+      }
+
+      let errorMsg = 'Failed to update task status. Please try again.';
+      try {
+        const errorData = await response.json();
+        errorMsg = errorData.message || errorMsg;
+      } catch {
+        // If response is not JSON, keep default errorMsg
+      }
+      throw new Error(errorMsg);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message || 'Network error. Please try again later.');
+  }
+}
+
 /**
  * Delete a task.
  * @param {number} taskId - The ID of the task to delete

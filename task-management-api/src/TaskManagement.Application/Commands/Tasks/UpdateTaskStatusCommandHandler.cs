@@ -36,6 +36,7 @@ namespace TaskManagement.Application.Commands.Tasks
 
             task.Status = status;
             _taskRepository.Update(task);
+            await _taskRepository.SaveChangesAsync(cancellationToken);
 
             var user = await _userRepository.GetByIdAsync(task.UserId, cancellationToken);
 

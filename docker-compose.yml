@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    build:
+      context: ./task-management-api
+      dockerfile: Dockerfile.mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong!Passw0rd
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+      - ./task-management-api/init-db.sql:/init-db.sql
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "YourStrong!Passw0rd", "-Q", "SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    command: >
+      /bin/bash -c "
+        /opt/mssql/bin/sqlservr &
+        pid=$$!
+        echo 'Waiting for SQL Server to start...'
+        for i in {1..60}; do
+          /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -C -Q 'SELECT 1' && break
+          sleep 1
+        done
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -C -i /init-db.sql
+        wait $$pid
+      "
+
+  api:
+    build:
+      context: ./task-management-api
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=TaskManagement;User=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
+    ports:
+      - "8080:80"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./task-management-frontend/task-management-frontend
+      dockerfile: Dockerfile
+      args:
+        # Use nginx proxy in container: React app will call /api which nginx proxies to backend.
+        REACT_APP_API_BASE_URL: /api
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      api:
+        condition: service_started
+
+volumes:
+  sql_data:

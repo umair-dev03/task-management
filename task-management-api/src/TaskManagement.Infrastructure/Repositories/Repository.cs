@@ -58,6 +58,11 @@ namespace TaskManagement.Infrastructure.Repositories
             _dbSet.Remove(entity);
         }
 
+        public IQueryable<T> Query()
+        {
+            return _dbSet;
+        }
+
         public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             await _context.SaveChangesAsync(cancellationToken);
