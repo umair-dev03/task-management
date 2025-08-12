@@ -191,10 +191,17 @@ export async function updateTaskStatus(taskId, status) {
     const token = getAuthToken();
     const url = `${API_BASE_URL}/Task/${taskId}/status`;
 
+    // Debug log for easier diagnosis in browser console
+    // eslint-disable-next-line no-console
+    console.log('[updateTaskStatus] PATCH', url, { status });
+
     const response = await fetch(url, {
       method: 'PATCH',
+      mode: 'cors',
+      cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
+        Accept: 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({ status }),
@@ -208,18 +215,36 @@ export async function updateTaskStatus(taskId, status) {
         throw new Error('Authentication failed. Please login again.');
       }
 
-      let errorMsg = 'Failed to update task status. Please try again.';
+      let errorMsg = `Failed to update task status (HTTP ${response.status}).`;
       try {
-        const errorData = await response.json();
-        errorMsg = errorData.message || errorMsg;
+        // Try JSON first
+        const ct = response.headers.get('content-type') || '';
+        if (ct.includes('application/json')) {
+          const errorData = await response.json();
+          errorMsg =
+            errorData.error ||
+            errorData.Error ||
+            errorData.message ||
+            errorData.Message ||
+            errorMsg;
+        } else {
+          // Fallback to text
+          const text = await response.text();
+          if (text) errorMsg = `${errorMsg} ${text}`;
+        }
       } catch {
-        // If response is not JSON, keep default errorMsg
+        // keep default errorMsg
       }
       throw new Error(errorMsg);
     }
 
-    return await response.json();
+    const data = await response.json();
+    // eslint-disable-next-line no-console
+    console.log('[updateTaskStatus] OK', data);
+    return data;
   } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[updateTaskStatus] Error', error);
     throw new Error(error.message || 'Network error. Please try again later.');
   }
 }

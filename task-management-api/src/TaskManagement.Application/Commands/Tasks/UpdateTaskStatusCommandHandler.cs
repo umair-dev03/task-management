@@ -22,9 +22,6 @@ namespace TaskManagement.Application.Commands.Tasks
 
         public async System.Threading.Tasks.Task<Result<TaskDto>> Handle(UpdateTaskStatusCommand command, CancellationToken cancellationToken)
         {
-            // Only Manager can update status
-            if (command.Role != "Manager")
-                return Result<TaskDto>.Failure("You are not authorized to update task status.");
 
             var task = await _taskRepository.GetByIdAsync(command.TaskId, cancellationToken);
             if (task == null)

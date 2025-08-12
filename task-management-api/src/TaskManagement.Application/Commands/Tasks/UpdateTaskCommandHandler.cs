@@ -36,6 +36,7 @@ namespace TaskManagement.Application.Commands.Tasks
             task.HourWorked = command.HourWorked;
 
             _taskRepository.Update(task);
+            await _taskRepository.SaveChangesAsync(cancellationToken);
 
             // Get user for EmployeeName
             var user = await _userRepository.GetByIdAsync(task.UserId, cancellationToken);
