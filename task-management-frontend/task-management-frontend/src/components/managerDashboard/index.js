@@ -114,46 +114,40 @@ function ManagerDashboard() {
     }
   };
 
-  // Status cell renderer with buttons
+  // Status cell renderer with single status button
   const StatusCell = (props) => {
     const { dataItem } = props;
     const currentStatus = dataItem.status || 'Pending';
 
-    // Determine button colors based on current status
-    const getApproveButtonColor = () => {
-      if (currentStatus === 'Approved') return '#28a745'; // Green
-      if (currentStatus === 'Rejected') return '#6c757d'; // Gray
-      return '#6c757d'; // Gray for pending
-    };
-
-    const getRejectButtonColor = () => {
-      if (currentStatus === 'Rejected') return '#dc3545'; // Red
-      if (currentStatus === 'Approved') return '#6c757d'; // Gray
-      return '#6c757d'; // Gray for pending
+    // Get status color
+    const getStatusColor = (status) => {
+      switch (status) {
+        case 'Approved': return '#28a745';
+        case 'Rejected': return '#dc3545';
+        default: return '#6c757d';
+      }
     };
 
     return (
       <td {...props.tdProps}>
         <div style={{
           display: 'flex',
-          gap: '6px',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
           alignItems: 'center'
         }}>
           <Button
-            themeColor={currentStatus === 'Approved' ? 'success' : 'secondary'}
             size="small"
-            onClick={() => handleStatusChange(dataItem, 'Approved')}
+            onClick={() => handleStatusChange(dataItem, currentStatus)}
             style={{
-              backgroundColor: getApproveButtonColor(),
+              backgroundColor: getStatusColor(currentStatus),
               color: 'white',
               border: 'none',
               borderRadius: '4px',
-              padding: '3px 8px',
+              padding: '3px 6px',
               cursor: 'pointer',
               fontSize: '10px',
               fontWeight: '600',
-              minWidth: '50px',
+              minWidth: '40px',
               height: '24px',
               display: 'flex',
               alignItems: 'center',
@@ -161,32 +155,10 @@ function ManagerDashboard() {
               textTransform: 'uppercase',
               letterSpacing: '0.5px'
             }}
+            onMouseEnter={(e) => e.target.style.opacity = '0.8'}
+            onMouseLeave={(e) => e.target.style.opacity = '1'}
           >
-            Approve
-          </Button>
-          <Button
-            themeColor={currentStatus === 'Rejected' ? 'error' : 'secondary'}
-            size="small"
-            onClick={() => handleStatusChange(dataItem, 'Rejected')}
-            style={{
-              backgroundColor: getRejectButtonColor(),
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              padding: '3px 8px',
-              cursor: 'pointer',
-              fontSize: '10px',
-              fontWeight: '600',
-              minWidth: '50px',
-              height: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px'
-            }}
-          >
-            Reject
+            {currentStatus}
           </Button>
         </div>
       </td>
@@ -250,8 +222,8 @@ function ManagerDashboard() {
               background: "#fff",
               borderRadius: "16px",
               padding: "0",
-              minWidth: "400px",
-              maxWidth: "500px",
+              minWidth: "500px",
+              maxWidth: "600px",
               width: "90%",
               boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
               display: "flex",
@@ -263,9 +235,12 @@ function ManagerDashboard() {
             {/* Modal Header */}
             <div style={{
               background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              padding: "24px 32px",
+              padding: "1.5rem",
               color: "white",
-              position: "relative"
+              position: "relative",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
             }}>
               <h3 style={{
                 margin: 0,
@@ -285,24 +260,23 @@ function ManagerDashboard() {
                   setNewStatus('');
                 }}
                 style={{
-                  position: "absolute",
-                  top: "16px",
-                  right: "16px",
-                  background: "rgba(255,255,255,0.2)",
+                  background: "transparent",
                   border: "none",
                   borderRadius: "50%",
                   width: "32px",
-                  height: "32px",
                   color: "white",
-                  fontSize: "18px",
+                  fontSize: "14px",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  transition: "all 0.2s ease"
+                  transition: "all 0.2s ease",
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px"
                 }}
-                onMouseEnter={(e) => e.target.style.background = "rgba(255,255,255,0.3)"}
-                onMouseLeave={(e) => e.target.style.background = "rgba(255,255,255,0.2)"}
+                onMouseEnter={(e) => e.target.style.background = "transparent"}
+                onMouseLeave={(e) => e.target.style.background = "transparent"}
               >
                 ✕
               </button>
@@ -326,8 +300,11 @@ function ManagerDashboard() {
                   }}>
                     "{selectedTask?.title}"
                   </p>
-                  <p style={{ fontSize: "14px", color: "#6b7280", margin: "0" }}>
+                  <p style={{ fontSize: "14px", color: "#6b7280", margin: "0 0 8px 0" }}>
                     Employee: {selectedTask?.employeeName}
+                  </p>
+                  <p style={{ fontSize: "14px", color: "#6b7280", margin: "0" }}>
+                    Current Status: <span style={{ fontWeight: "600", color: "#667eea" }}>{selectedTask?.status || 'Pending'}</span>
                   </p>
                 </div>
 
@@ -383,7 +360,7 @@ function ManagerDashboard() {
                       </span>
                     ) : (
                       <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        Confirm Approve
+                        Approved
                       </span>
                     )}
                   </Button>
@@ -391,7 +368,6 @@ function ManagerDashboard() {
                     type="button"
                     onClick={() => confirmStatusChange('Rejected')}
                     disabled={submittingStatus}
-                    themeColor="error"
                     size="medium"
                     style={{
                       padding: "12px 24px",
@@ -412,7 +388,7 @@ function ManagerDashboard() {
                       </span>
                     ) : (
                       <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        Confirm Reject
+                        Rejected
                       </span>
                     )}
                   </Button>

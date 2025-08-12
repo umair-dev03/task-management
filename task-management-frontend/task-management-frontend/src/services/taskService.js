@@ -189,13 +189,7 @@ export async function updateTask(taskId, taskData) {
 export async function updateTaskStatus(taskId, status) {
   try {
     const token = getAuthToken();
-    const url = `${API_BASE_URL}/Task/${taskId}/status`;
-
-    // Debug log for easier diagnosis in browser console
-    // eslint-disable-next-line no-console
-    console.log('[updateTaskStatus] PATCH', url, { status });
-
-    const response = await fetch(url, {
+    const response = await fetch(`${API_BASE_URL}/Task/${taskId}/status`, {
       method: 'PATCH',
       mode: 'cors',
       cache: 'no-store',
@@ -209,42 +203,15 @@ export async function updateTaskStatus(taskId, status) {
 
     if (!response.ok) {
       if (response.status === 401) {
-        // Token is invalid or expired, redirect to login
         localStorage.removeItem('user');
         window.location.href = '/';
         throw new Error('Authentication failed. Please login again.');
       }
-
-      let errorMsg = `Failed to update task status (HTTP ${response.status}).`;
-      try {
-        // Try JSON first
-        const ct = response.headers.get('content-type') || '';
-        if (ct.includes('application/json')) {
-          const errorData = await response.json();
-          errorMsg =
-            errorData.error ||
-            errorData.Error ||
-            errorData.message ||
-            errorData.Message ||
-            errorMsg;
-        } else {
-          // Fallback to text
-          const text = await response.text();
-          if (text) errorMsg = `${errorMsg} ${text}`;
-        }
-      } catch {
-        // keep default errorMsg
-      }
-      throw new Error(errorMsg);
+      throw new Error(`Failed to update task status (HTTP ${response.status})`);
     }
 
-    const data = await response.json();
-    // eslint-disable-next-line no-console
-    console.log('[updateTaskStatus] OK', data);
-    return data;
+    return await response.json();
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('[updateTaskStatus] Error', error);
     throw new Error(error.message || 'Network error. Please try again later.');
   }
 }
@@ -259,8 +226,6 @@ export async function deleteTask(taskId) {
   try {
     const token = getAuthToken();
     const url = `${API_BASE_URL}/Task/${taskId}`;
-
-
 
     const response = await fetch(url, {
       method: 'DELETE',

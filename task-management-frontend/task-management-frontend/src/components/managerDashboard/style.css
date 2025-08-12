@@ -559,6 +559,48 @@ table {
     }
 }
 
+/* Modal responsive styles for screens < 576px */
+@media (max-width: 575px) {
+
+    /* Modal mobile optimization */
+    .modal-backdrop {
+        padding: 10px;
+    }
+
+    /* Status confirmation modal mobile */
+    .manager-dashboard div[style*="position: fixed"] {
+        width: 95vw !important;
+        min-width: 300px !important;
+        max-width: 95vw !important;
+    }
+
+    .manager-dashboard div[style*="position: fixed"]>div {
+        min-width: 300px !important;
+        max-width: 95vw !important;
+        width: 95vw !important;
+    }
+
+    /* Modal header mobile */
+    .manager-dashboard div[style*="position: fixed"] h3 {
+        font-size: 18px !important;
+        margin: 0 !important;
+    }
+
+    /* Modal body mobile */
+    .manager-dashboard div[style*="position: fixed"] p {
+        font-size: 14px !important;
+        margin: 8px 0 !important;
+    }
+
+    /* Modal buttons mobile */
+    .manager-dashboard div[style*="position: fixed"] button[type="button"] {
+        padding: 6px 12px !important;
+        font-size: 11px !important;
+        min-width: 60px !important;
+        height: 32px !important;
+    }
+}
+
 @media (max-width: 1024px) {
 
     .k-grid {

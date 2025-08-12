@@ -117,12 +117,16 @@ function EmployeeDashboard() {
     async function loadTasks() {
       setLoading(true);
       try {
+        console.log('🔍 Loading tasks from server...');
         const res = await fetchTasksPaginated({
           page,
           pageSize,
           searchEmployeeName: '', // Always fetch all data from API
           status
         });
+
+        console.log('🔍 Server response on load:', res);
+        console.log('🔍 Current local state before update:', { allTasks, tasks });
 
         // Store all unfiltered tasks
         setAllTasks(res.items || []);
@@ -173,7 +177,7 @@ function EmployeeDashboard() {
   const [taskForm, setTaskForm] = useState({
     title: "",
     date: "",
-    hourWorked: 0,
+    hourWorked: "",
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -182,7 +186,7 @@ function EmployeeDashboard() {
     const { name, value } = e.target;
     setTaskForm((prev) => ({
       ...prev,
-      [name]: name === "hourWorked" ? Number(value) : value,
+      [name]: name === "hourWorked" ? (value === "" ? "" : Number(value)) : value,
     }));
   };
 
@@ -193,7 +197,7 @@ function EmployeeDashboard() {
     setTaskForm({
       title: "",
       date: "",
-      hourWorked: 0,
+      hourWorked: "",
     });
     setShowModal(true);
   };
@@ -218,7 +222,7 @@ function EmployeeDashboard() {
     setTaskForm({
       title: task.title || "",
       date: formattedDate,
-      hourWorked: task.hourWorked || 0,
+      hourWorked: task.hourWorked !== null && task.hourWorked !== undefined ? task.hourWorked : "",
     });
     setShowModal(true);
   };
@@ -232,39 +236,40 @@ function EmployeeDashboard() {
       const taskData = {
         title: taskForm.title,
         date: taskForm.date ? `${taskForm.date.split('T')[0]}T00:00:00` : new Date().toISOString().split('T')[0] + 'T00:00:00',
-        hourWorked: parseInt(taskForm.hourWorked) || 0,
+        hourWorked: taskForm.hourWorked === "" || taskForm.hourWorked === null || taskForm.hourWorked === undefined ? 0 : Number(taskForm.hourWorked),
       };
+
+      // For editing, include additional fields that might be required by the API
+      if (isEditMode) {
+        // Find the original task to get additional fields
+        const originalTask = allTasks.find(task => task.id === editingTaskId);
+        if (originalTask) {
+          // Include fields that shouldn't change during edit
+          taskData.employeeName = originalTask.employeeName;
+          taskData.status = originalTask.status;
+        }
+      }
 
       if (isEditMode) {
         // Update existing task using PUT API
         const updatedTask = await updateTask(editingTaskId, taskData);
         toast.success("Task updated successfully!", { position: "top-right" });
 
-        // Update the specific task in the local state with the returned data from API
-        setTasks(prevTasks => {
-          const updatedTasks = prevTasks.map(task =>
-            task.id === editingTaskId
-              ? {
-                ...task,
-                ...updatedTask, // Use the actual returned data from API
-                title: updatedTask.title || taskData.title,
-                date: updatedTask.date || taskData.date,
-                hourWorked: updatedTask.hourWorked || taskData.hourWorked,
-                status: updatedTask.status || task.status,
-                employeeName: updatedTask.employeeName || task.employeeName
-              }
-              : task
-          );
-
-          return updatedTasks;
-        });
+        // Update both allTasks and tasks arrays with the latest server value (same pattern as manager dashboard)
+        setAllTasks(prev =>
+          prev.map(task => (task.id === editingTaskId ? { ...task, ...updatedTask } : task))
+        );
+        setTasks(prev =>
+          prev.map(task => (task.id === editingTaskId ? { ...task, ...updatedTask } : task))
+        );
       } else {
         // Create new task using POST API
         const created = await createTask(taskData);
         toast.success("Task created successfully!", { position: "top-right" });
 
-        // Add the new task to the top of the current list
-        setTasks(prevTasks => [created, ...prevTasks]);
+        // Add the new task to both allTasks and tasks state (same pattern as manager dashboard)
+        setAllTasks(prev => [created, ...prev]);
+        setTasks(prev => [created, ...prev]);
         setTotalCount(prev => prev + 1);
 
         // Mark this task as newly created for highlighting
@@ -279,26 +284,11 @@ function EmployeeDashboard() {
           });
         }, 5000);
 
-        // Also refresh from server to ensure consistency
-        setTimeout(async () => {
-          try {
-            const res = await fetchTasksPaginated({
-              page,
-              pageSize,
-              searchEmployeeName: '', // Always fetch all data from API
-              status
-            });
-            setTasks(res.items || []);
-            setTotalCount(res.totalCount || 0);
-          } catch (error) {
-            // Error refreshing tasks after create
-          }
-        }, 1000);
       }
 
       // Reset modal state
       setShowModal(false);
-      setTaskForm({ title: "", date: "", hourWorked: 0 });
+      setTaskForm({ title: "", date: "", hourWorked: "" });
       setIsEditMode(false);
       setEditingTaskId(null);
     } catch (error) {
@@ -397,7 +387,7 @@ function EmployeeDashboard() {
               <button
                 onClick={() => {
                   setShowModal(false);
-                  setTaskForm({ title: "", date: "", hourWorked: 0 });
+                  setTaskForm({ title: "", date: "", hourWorked: "" });
                   setIsEditMode(false);
                   setEditingTaskId(null);
                 }}
@@ -555,7 +545,7 @@ function EmployeeDashboard() {
                     type="button"
                     onClick={() => {
                       setShowModal(false);
-                      setTaskForm({ title: "", date: "", hourWorked: 0 });
+                      setTaskForm({ title: "", date: "", hourWorked: "" });
                       setIsEditMode(false);
                       setEditingTaskId(null);
                     }}
